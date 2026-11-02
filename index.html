@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>가계부</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="가계부">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#2f5bff">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#f2f4f8;--card:#fff;--ink:#16213a;--sub:#7a8499;--line:#e5e9f1;--acc:#2f5bff;--exp:#e5533d;--inc:#0e9f8e;--chip:#eef1f7;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1420;--card:#192031;--ink:#eef1f8;--sub:#8e98ae;--line:#272f44;--acc:#6f8cff;--exp:#ff7a66;--inc:#3cc9b8;--chip:#222a3f}}
+:root[data-theme="dark"]{--bg:#0f1420;--card:#192031;--ink:#eef1f8;--sub:#8e98ae;--line:#272f44;--acc:#6f8cff;--exp:#ff7a66;--inc:#3cc9b8;--chip:#222a3f}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",system-ui,sans-serif;max-width:520px;margin:0 auto;padding:0 16px 110px}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.top{display:flex;align-items:center;justify-content:center;gap:18px;padding:18px 0 12px}
+.top b{font-size:18px;min-width:110px;text-align:center}
+.top button{width:36px;height:36px;border-radius:50%;background:var(--card);font-size:18px}
+.sum{background:var(--acc);color:#fff;border-radius:22px;padding:22px 20px}
+.sum small{opacity:.8;font-size:13px}
+.sum .bal{font-size:34px;font-weight:700;margin:2px 0 16px;letter-spacing:-.5px}
+.row2{display:flex;gap:10px}
+.row2>div{flex:1;background:rgba(255,255,255,.16);border-radius:14px;padding:10px 12px}
+.row2 em{font-style:normal;font-weight:700;display:block;font-size:16px;margin-top:2px}
+h2{font-size:15px;margin:26px 2px 10px}
+.card{background:var(--card);border-radius:18px;padding:14px 16px}
+.bar{margin:8px 0}
+.bar div.t{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+.bar div.t span:last-child{color:var(--sub)}
+.bar i{display:block;height:7px;border-radius:4px;background:var(--exp);opacity:.85}
+.day{display:flex;justify-content:space-between;font-size:12.5px;color:var(--sub);margin:16px 4px 6px}
+.it{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.it:last-child{border:0}
+.dot{width:38px;height:38px;border-radius:12px;background:var(--chip);display:grid;place-items:center;font-size:12px;font-weight:500;flex:none}
+.it .m{flex:1;min-width:0}.it .m b{font-weight:500;font-size:15px;display:block}
+.it .m span{font-size:12.5px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.it .a{font-weight:700;font-size:15px}.a.e{color:var(--exp)}.a.i{color:var(--inc)}
+.empty{text-align:center;color:var(--sub);padding:34px 0;font-size:14px}
+.fab{position:fixed;right:max(18px,calc(50% - 242px));bottom:calc(22px + env(safe-area-inset-bottom,0px));background:var(--acc);color:#fff;height:54px;padding:0 22px;border-radius:27px;font-weight:700;font-size:15px;box-shadow:0 6px 18px rgba(47,91,255,.35)}
+.sh{position:fixed;inset:0;background:rgba(10,15,30,.5);display:none;align-items:flex-end;justify-content:center;z-index:5}
+.sh.on{display:flex}
+.pn{background:var(--card);width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));max-height:92%;overflow:auto}
+.seg{display:flex;background:var(--chip);border-radius:12px;padding:3px;margin-bottom:14px}
+.seg button{flex:1;padding:9px;border-radius:10px;font-weight:500}
+.seg button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.f{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:12px;font:inherit;margin-bottom:10px}
+.amt{font-size:26px;font-weight:700;text-align:right}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+.chips button{background:var(--chip);padding:7px 13px;border-radius:16px;font-size:14px}
+.chips button.on{background:var(--acc);color:#fff}
+.acts{display:flex;gap:8px;margin-top:4px}
+.acts button{flex:1;padding:14px;border-radius:14px;font-weight:700;background:var(--chip)}
+.acts .ok{background:var(--acc);color:#fff;flex:2}
+.acts .del{color:var(--exp)}
+.bud{margin-top:12px}.bt{display:flex;justify-content:space-between;align-items:center;font-weight:500;font-size:14px}
+.bi{width:130px;margin:0;text-align:right;padding:8px 10px}
+.pg{height:8px;border-radius:4px;background:var(--chip);margin:10px 0 8px;overflow:hidden}
+.pg i{display:block;height:100%;border-radius:4px;background:var(--acc);width:0;transition:width .3s}
+.sb{color:var(--sub);font-size:12.5px;display:block}
+.tr{display:flex;gap:10px;align-items:flex-end;height:110px}
+.tr div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;font-size:12px;color:var(--sub)}
+.tr i{display:block;width:100%;border-radius:6px 6px 0 0;background:var(--chip)}.tr i.cu{background:var(--acc)}
+.rc{display:flex;gap:8px;align-items:center;font-size:14px;margin:2px 2px 12px}
+.sr{display:flex;justify-content:space-between;font-size:12.5px;color:var(--sub);padding:3px 0 3px 12px}
+.chips.sm button{font-size:13px;padding:6px 11px;background:transparent;border:1px solid var(--line)}
+.chips.sm button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+</style>
+</head>
+<body>
+<div class="top"><button id="pv" aria-label="이전 달">‹</button><b id="ym"></b><button id="nx" aria-label="다음 달">›</button></div>
+<div class="sum"><small>이번 달 잔액</small><div class="bal" id="bal"></div>
+<div class="row2"><div><small>수입</small><em id="inc"></em></div><div><small>지출</small><em id="exp"></em></div><div><small>저축</small><em id="sav"></em></div></div></div>
+<div class="card bud"><div class="bt"><span>월 예산</span><input id="bg" class="f bi" inputmode="numeric" placeholder="설정하기" aria-label="월 예산"></div><div class="pg"><i id="pgi"></i></div><small id="bgt" class="sb"></small></div>
+<div id="catWrap"></div>
+<h2>월별 지출 추세</h2><div class="card"><div class="tr" id="tr"></div><small id="trt" class="sb" style="margin-top:12px"></small></div>
+<h2>내역</h2>
+<div id="list"></div>
+<button class="fab" id="add">+ 내역 추가</button>
+
+<div class="sh" id="sh"><div class="pn">
+<input class="f" id="qk" placeholder="빠른 입력: 점심 9,000 또는 월급 250만" aria-label="빠른 입력">
+<div class="seg"><button id="tE" class="on">지출</button><button id="tI">수입</button></div>
+<input class="f amt" id="amt" inputmode="numeric" placeholder="0원" aria-label="금액">
+<div class="chips" id="chips"></div>
+<div class="chips sm" id="subs"></div>
+<input class="f" id="memo" placeholder="메모 (예: 헬스, 점심 — 쓰면 자동 분류)" maxlength="40">
+<input class="f" id="date" type="date" aria-label="날짜">
+<label class="rc" id="rcl"><input type="checkbox" id="rec"> 매달 같은 날 자동으로 반복</label>
+<div class="acts"><button id="dl" class="del" hidden>삭제</button><button id="cc">취소</button><button class="ok" id="sv">저장</button></div>
+</div></div>
+
+<script>
+const SUBS={"음식":["식사","카페·간식","술","장보기","배달"],"교통":["대중교통","택시","주유·주차"],"쇼핑":["옷·잡화","생활용품","전자기기"],"주거·통신":["월세·관리비","통신비","공과금"],"의료·건강":["병원·약국","운동"],"문화·여가":["영화·공연","게임·구독","여행"],"저축·투자":["적금","예금","투자","비상금"],"기타":["경조사","기타"]};
+const CATS={e:Object.keys(SUBS),i:["급여","용돈","알바","기타"]};
+const OLD={"식비":["음식","식사"],"카페":["음식","카페·간식"],"교통":["교통","대중교통"],"쇼핑":["쇼핑",""],"의료":["의료·건강",""],"문화":["문화·여가",""]};
+const COL={"음식":"#ef7d3c","교통":"#3b82f6","쇼핑":"#e0559a","주거·통신":"#8b6ff0","의료·건강":"#06b6d4","문화·여가":"#d4a017","저축·투자":"#22a45d","기타":"#8a94a6","급여":"#0e9f8e","용돈":"#0e9f8e","알바":"#0e9f8e"};
+const colOf=c=>COL[c]||"#8a94a6";
+const $=id=>document.getElementById(id);
+let items=[],cur=new Date(),type="e",cat="",sub="",editId=null,openCat="";
+try{items=JSON.parse(localStorage.getItem("gagyebu")||"[]")}catch(e){items=[]}
+items.forEach(x=>{if(x.type==="e"&&!SUBS[x.cat]){const o=OLD[x.cat];x.cat=o?o[0]:"기타";x.sub=o?o[1]:""}});
+const save=()=>{try{localStorage.setItem("gagyebu",JSON.stringify(items))}catch(e){}};
+let budget=0;try{budget=Number(localStorage.getItem("gagyebu_b"))||0}catch(e){}
+let seq=0;const pad=n=>String(n).padStart(2,"0");
+function applyRec(){const now=new Date(),today=iso(now);let ch=false;
+  items.filter(x=>x.rec&&!x.gen).forEach(t=>{const [y,m,d]=t.date.split("-").map(Number);let yy=y,mm=m;
+    while(yy<now.getFullYear()||(yy===now.getFullYear()&&mm<=now.getMonth()+1)){
+      if(!(yy===y&&mm===m)){const k=yy+"-"+pad(mm),dt=k+"-"+pad(Math.min(d,new Date(yy,mm,0).getDate()));
+        if(dt<=today&&!items.some(x=>x.gen===t.id&&x.date.startsWith(k))){items.push({...t,id:Date.now()+(++seq)/1000,gen:t.id,rec:false,date:dt});ch=true}}
+      mm++;if(mm>12){mm=1;yy++}}});
+  if(ch)save()}
+const won=n=>n.toLocaleString("ko-KR")+"원";
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+function render(){
+  const key=cur.getFullYear()+"-"+String(cur.getMonth()+1).padStart(2,"0");
+  $("ym").textContent=cur.getFullYear()+"년 "+(cur.getMonth()+1)+"월";
+  const ms=items.filter(x=>x.date.startsWith(key)).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+  const inc=ms.filter(x=>x.type==="i").reduce((s,x)=>s+x.amt,0),exp=ms.filter(x=>x.type==="e"&&x.cat!=="저축·투자").reduce((s,x)=>s+x.amt,0),sav=ms.filter(x=>x.cat==="저축·투자").reduce((s,x)=>s+x.amt,0);
+  $("bal").textContent=won(inc-exp-sav);$("inc").textContent=won(inc);$("exp").textContent=won(exp);$("sav").textContent=won(sav);
+  if(document.activeElement!==$("bg"))$("bg").value=budget?budget.toLocaleString("ko-KR"):"";
+  const pg=$("pgi"),bt=$("bgt");
+  if(budget){const sv=0,sp=exp-sv,av=budget-sv,r=av>0?sp/av:(sp>0?2:0);pg.style.width=Math.min(100,r*100)+"%";pg.style.background=r>1?"var(--exp)":"var(--acc)";
+    bt.textContent="";const l1=document.createElement("div"),l2=document.createElement("div");
+    l1.textContent="월 예산 "+won(budget)+" (저축은 예산 계산에서 제외)";
+    l2.style.cssText="font-weight:700;color:var(--ink);font-size:14px;margin-top:3px";
+    l2.textContent=av-sp>=0?"쓴 돈 "+won(sp)+" · 남은 돈 "+won(av-sp):"쓴 돈 "+won(sp)+" · "+won(sp-av)+" 초과했어요";
+    bt.append(l1,l2)}else{pg.style.width="0";bt.textContent="월 예산을 입력하면 남은 금액을 알려드려요"}
+  const mo=[];for(let k=5;k>=0;k--){const d=new Date(cur.getFullYear(),cur.getMonth()-k,1);const kk=d.getFullYear()+"-"+pad(d.getMonth()+1);mo.push({m:d.getMonth()+1,v:items.filter(x=>x.type==="e"&&x.cat!=="저축·투자"&&x.date.startsWith(kk)).reduce((s,x)=>s+x.amt,0)})}
+  const mx=Math.max(1,...mo.map(o=>o.v)),tr=$("tr");tr.textContent="";
+  mo.forEach((o,i)=>{const c=document.createElement("div");c.innerHTML="<i></i><span></span>";c.children[0].style.height=Math.max(3,o.v/mx*80)+"px";if(i===5)c.children[0].className="cu";c.children[1].textContent=o.m+"월";tr.appendChild(c)});
+  const pv=mo[4].v,nw=mo[5].v;$("trt").textContent=pv?"지난달보다 지출이 "+Math.abs(Math.round((nw-pv)/pv*100))+"% "+(nw>=pv?"늘었어요":"줄었어요"):"지난달 지출 기록이 없어 비교할 수 없어요";
+  const tot=exp+sav,by={};ms.filter(x=>x.type==="e").forEach(x=>by[x.cat]=(by[x.cat]||0)+x.amt);
+  const cw=$("catWrap");cw.textContent="";
+  if(tot){const h=document.createElement("h2");h.textContent="카테고리별 지출 (눌러서 세부 보기)";const c=document.createElement("div");c.className="card";
+    Object.entries(by).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{const d=document.createElement("div");d.className="bar";
+      d.innerHTML='<div class="t"><span></span><span></span></div><i></i>';
+      d.children[0].children[0].textContent=k;d.children[0].children[1].textContent=won(v)+" · "+Math.round(v/tot*100)+"%";
+      d.children[1].style.background=colOf(k);d.children[1].style.width=Math.max(4,v/tot*100)+"%";d.style.cursor="pointer";d.onclick=()=>{openCat=openCat===k?"":k;render()};c.appendChild(d);
+      if(openCat===k){const sb={};ms.filter(x=>x.type==="e"&&x.cat===k).forEach(x=>{const n=x.sub||"기타";sb[n]=(sb[n]||0)+x.amt});
+        Object.entries(sb).sort((a,b)=>b[1]-a[1]).forEach(([n,w])=>{const r=document.createElement("div");r.className="sr";r.innerHTML="<span></span><span></span>";r.children[0].textContent=n;r.children[1].textContent=won(w);c.appendChild(r)})}});
+    cw.append(h,c)}
+  const L=$("list");L.textContent="";
+  if(!ms.length){L.innerHTML='<div class="card empty">아직 내역이 없어요.<br>아래 버튼으로 첫 내역을 추가해 보세요.</div>';return}
+  const card=document.createElement("div");card.className="card";let last="";
+  const wd=["일","월","화","수","목","금","토"];
+  ms.forEach(x=>{
+    if(x.date!==last){last=x.date;const t=ms.filter(y=>y.date===x.date);const dd=new Date(x.date+"T00:00:00");
+      const s=t.reduce((a,y)=>a+(y.type==="e"?-y.amt:y.amt),0);
+      const h=document.createElement("div");h.className="day";h.innerHTML="<span></span><span></span>";
+      h.children[0].textContent=(dd.getMonth()+1)+"월 "+dd.getDate()+"일 ("+wd[dd.getDay()]+")";h.children[1].textContent=won(s);card.appendChild(h)}
+    const b=document.createElement("button");b.className="it";
+    b.innerHTML='<div class="dot"></div><div class="m"><b></b><span></span></div><div class="a"></div>';
+    const col=colOf(x.cat);b.children[0].style.background=col+"26";b.children[0].style.color=col;b.children[0].textContent=x.cat.slice(0,2);b.children[1].children[0].textContent=x.cat+(x.sub?" · "+x.sub:"");b.children[1].children[1].textContent=x.memo||"";
+    const a=b.children[2];a.textContent=(x.type==="e"?"-":"+")+won(x.amt);a.classList.add(x.type);
+    b.onclick=()=>open(x);card.appendChild(b)});
+  L.appendChild(card);
+}
+function chips(){const c=$("chips");c.textContent="";CATS[type].forEach(k=>{const b=document.createElement("button");b.textContent=k;
+  if(k===cat){b.className="on";b.style.background=colOf(k)}else b.style.boxShadow="inset 0 0 0 1.5px "+colOf(k)+"66";b.onclick=()=>{manual=true;cat=k;sub="";chips()};c.appendChild(b)});
+  const s=$("subs");s.textContent="";const SL=type==="e"?SUBS[cat]||[]:[];s.hidden=!SL.length;
+  SL.forEach(k=>{const b=document.createElement("button");b.textContent=k;if(k===sub){b.className="on";b.style.background=colOf(cat);b.style.borderColor=colOf(cat)}b.onclick=()=>{manual=true;sub=sub===k?"":k;chips()};s.appendChild(b)})}
+function setType(t){type=t;$("tE").className=t==="e"?"on":"";$("tI").className=t==="i"?"on":"";if(!CATS[t].includes(cat)){cat=CATS[t][0];sub=""}chips()}
+function open(x){editId=x?x.id:null;setType(x?x.type:"e");if(x){cat=x.cat;sub=x.sub||""}else{cat=CATS[type][0];sub=""}chips();
+  $("amt").value=x?x.amt.toLocaleString("ko-KR"):"";$("memo").value=x?x.memo:"";
+  const d=new Date();$("date").value=x?x.date:(d.getMonth()===cur.getMonth()&&d.getFullYear()===cur.getFullYear()?iso(d):iso(new Date(cur.getFullYear(),cur.getMonth(),1)));
+  $("dl").hidden=!x;$("rec").checked=!!(x&&x.rec);$("rcl").hidden=!!(x&&x.gen);$("qk").value="";manual=!!x;$("sh").classList.add("on");if(!x)setTimeout(()=>$("amt").focus(),50)}
+const close=()=>$("sh").classList.remove("on");
+$("add").onclick=()=>open(null);$("cc").onclick=close;
+$("sh").onclick=e=>{if(e.target===$("sh"))close()};
+$("tE").onclick=()=>setType("e");$("tI").onclick=()=>setType("i");
+$("amt").oninput=e=>{const n=e.target.value.replace(/\D/g,"");e.target.value=n?Number(n).toLocaleString("ko-KR"):""};
+$("sv").onclick=()=>{const amt=Number($("amt").value.replace(/\D/g,""));
+  if(!amt){$("amt").focus();$("amt").placeholder="금액을 입력해 주세요";return}
+  const old=items.find(x=>x.id===editId);const it={id:editId||Date.now(),type,amt,cat,sub:type==="e"?sub:"",memo:$("memo").value.trim(),date:$("date").value||iso(new Date()),rec:old&&old.gen?false:$("rec").checked,gen:old?old.gen:undefined};
+  items=editId?items.map(x=>x.id===editId?it:x):[...items,it];
+  const lm=it.memo.toLowerCase();if(lm&&lm.length<=20){learn[lm]=[it.type,it.cat+(it.sub?"|"+it.sub:"")];try{localStorage.setItem("gagyebu_l",JSON.stringify(learn))}catch(e){}}
+  const d=new Date(it.date+"T00:00:00");cur=new Date(d.getFullYear(),d.getMonth(),1);
+  save();applyRec();close();render()};
+$("dl").onclick=()=>{items=items.filter(x=>x.id!==editId&&x.gen!==editId);save();close();render()};
+$("pv").onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()-1,1);render()};
+$("nx").onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()+1,1);render()};
+$("bg").oninput=e=>{const n=e.target.value.replace(/\D/g,"");budget=Number(n)||0;e.target.value=n?Number(n).toLocaleString("ko-KR"):"";try{localStorage.setItem("gagyebu_b",String(budget))}catch(x){}render()};
+const KW0={i:{급여:"월급 급여",알바:"알바 아르바이트",용돈:"용돈"},e:{식비:"점심 저녁 아침 밥 식당 치킨 피자 김밥 라면 편의점",카페:"커피 카페 아메리카노 라떼 스벅",교통:"버스 지하철 택시 교통 기차",쇼핑:"옷 쇼핑 쿠팡 신발",의료:"병원 약국 치과",문화:"영화 게임 책 공연 넷플릭스","주거·통신":"월세 관리비 통신 휴대폰 인터넷"}};
+const KW={i:{"급여":"월급 급여","알바":"알바 아르바이트","용돈":"용돈"},e:{"음식|카페·간식":"커피 카페 아메리카노 라떼 스벅 간식 빵","음식|술":"술 맥주 소주 호프","음식|장보기":"마트 장보기","음식|배달":"배달 배민 요기요","음식|식사":"점심 저녁 아침 밥 식당 치킨 피자 김밥 라면 편의점","교통|대중교통":"버스 지하철 기차 교통","교통|택시":"택시","저축·투자|적금":"적금","저축·투자|예금":"예금","저축·투자|투자":"주식 투자 코인","저축·투자|비상금":"비상금","쇼핑":"옷 쇼핑 쿠팡 신발","의료·건강|병원·약국":"병원 약국 치과","문화·여가|영화·공연":"영화 공연","문화·여가|게임·구독":"게임 넷플릭스 구독","주거·통신|월세·관리비":"월세 관리비","주거·통신|통신비":"통신 휴대폰"}};
+const X=(k,w)=>{KW.e[k]=(KW.e[k]||"")+" "+w};
+delete KW.e["쇼핑"];
+X("음식|식사","국밥 찌개 냉면 파스타 햄버거 맥도날드 버거킹 롯데리아 도시락 학식 분식 떡볶이 삼겹살 고기 횟집 초밥 짜장 짬뽕 샐러드 브런치");
+X("음식|카페·간식","디저트 케이크 아이스크림 빵집 음료 버블티 마카롱 과자 스타벅스 투썸 이디야 메가커피 컴포즈");
+X("음식|술","와인 막걸리 하이볼 포차 이자카야 회식 술집");
+X("음식|장보기","이마트 홈플러스 코스트코 식재료 과일 채소");
+X("음식|배달","쿠팡이츠 땡겨요");
+X("교통|대중교통","환승 교통카드 티머니 srt 고속버스");
+X("교통|택시","카카오t 타다 콜택시");
+X("교통|주유·주차","주유 기름 휘발유 주차 톨게이트 하이패스 세차");
+X("쇼핑|옷·잡화","옷 신발 가방 모자 지갑 무신사 유니클로 양말 속옷 안경 화장품 올리브영");
+X("쇼핑|생활용품","다이소 생필품 세제 휴지 샴푸 가구 이케아");
+X("쇼핑|전자기기","이어폰 충전기 노트북 키보드 마우스 모니터 케이블 아두이노 센서 부품");
+KW.e["쇼핑"]="쇼핑 쿠팡 택배";
+X("의료·건강|병원·약국","안과 피부과 한의원 정형외과 내과 진료 처방 영양제 비타민");
+X("의료·건강|운동","헬스 피트니스 필라테스 요가 수영 클라이밍 러닝 크로스핏 프로틴 단백질 퍼스널 피티 운동 배드민턴 테니스 골프 풋살 축구 농구 볼링 복싱 등산");
+X("문화·여가|영화·공연","영화관 cgv 메가박스 콘서트 뮤지컬 전시 책 도서 서점 노래방");
+X("문화·여가|게임·구독","스팀 유튜브 왓챠 디즈니 티빙 웨이브 멜론 스포티파이 구독 닌텐도 chatgpt 클로드");
+X("문화·여가|여행","여행 숙소 호텔 에어비앤비 비행기 렌터카 펜션 캠핑 모텔 리조트 에버랜드");
+X("주거·통신|월세·관리비","집세 보증금");
+X("주거·통신|통신비","요금제 알뜰폰 유플러스 인터넷");
+X("주거·통신|공과금","전기세 수도세 가스비 공과금 전기요금");
+X("저축·투자|적금","청약 저금 저축");
+X("저축·투자|투자","주식 코인 비트코인 etf 펀드 연금 증권");
+X("기타|경조사","축의금 부조 조의금 결혼식 장례 경조사 선물 생일 회비 모임");
+X("기타|기타","수수료 벌금 세금 이자 보험 복사 출력 프린트 등록금 교재 수강 자격증 응시 시험 토익");
+KW.i["급여"]+=" 상여 보너스";KW.i["알바"]+=" 알바비 시급 일당";KW.i["용돈"]+=" 세뱃돈";
+let learn={};try{learn=JSON.parse(localStorage.getItem("gagyebu_l")||"{}")}catch(e){}
+let manual=false;
+function guess(s,only){s=s.toLowerCase().trim();if(!s)return null;
+  if(learn[s]&&(!only||learn[s][0]===only))return learn[s];
+  for(const ty of only?[only]:["e","i"]){for(const k in KW[ty]){if(KW[ty][k].split(" ").some(w=>w&&s.includes(w.toLowerCase())))return [ty,k]}}
+  return null}
+function applyGuess(g){if(!g)return;setType(g[0]);const [cc,ss]=g[1].split("|");cat=cc;sub=ss||"";chips()}
+$("memo").oninput=()=>{if(!manual)applyGuess(guess($("memo").value,type==="i"?"i":null))};
+$("qk").onchange=()=>{const s=$("qk").value,m=s.match(/(\d[\d,.]*)\s*(만|천)?\s*원?/);let rest=s;
+  if(m){let a=parseFloat(m[1].replace(/,/g,""));if(m[2]==="만")a*=10000;if(m[2]==="천")a*=1000;$("amt").value=Math.round(a).toLocaleString("ko-KR");rest=s.replace(m[0],"")}
+  rest=rest.trim();$("memo").value=rest.slice(0,40);manual=false;applyGuess(guess(rest,type==="i"?"i":null))};
+const _old=()=>{const s=$("qk").value,m=s.match(/(\d[\d,.]*)\s*(만|천)?\s*원?/);if(!m)return;
+  let a=parseFloat(m[1].replace(/,/g,""));if(m[2]==="만")a*=10000;if(m[2]==="천")a*=1000;
+  let t="e",c="";for(const ty of ["i","e"]){for(const k in KW[ty]){if(KW[ty][k].split(" ").some(w=>s.includes(w))){t=ty;c=k;break}}if(c)break}
+  setType(t);if(c){const [cc,ss]=c.split("|");cat=cc;sub=ss||"";chips()}$("amt").value=Math.round(a).toLocaleString("ko-KR");$("memo").value=s.replace(m[0],"").trim().slice(0,40)};
+cur=new Date(cur.getFullYear(),cur.getMonth(),1);applyRec();render();
+try{if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js")}catch(e){}
+</script>
+</body>
+</html>
